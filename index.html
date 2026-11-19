@@ -609,6 +609,7 @@ speedInput.oninput=()=>{
  Number(speedInput.value).toFixed(1).replace(".0","")+"×";
 };
 
+
 // ANIMATION
 let previous=performance.now();
 
@@ -624,30 +625,21 @@ function animate(now){
   sun.rotation.y+=delta*.1;
   sunCorona.material.rotation+=delta*.015;
 
-  
-Object.values(planets).forEach(({pivot,mesh,data:p})=>{
+  Object.values(planets).forEach(({pivot,mesh,data:p})=>{
 
- // PLANET REVOLUTION AROUND THE SUN
- pivot.rotation.y+=delta*p.speed*.16*multiplier;
-
- // PLANET ROTATION ON ITS OWN AXIS
- mesh.rotation.y+=delta*
-  (p.name==="Venus"?-.34:.55)*multiplier;
-
- // INDEPENDENT CLOUD MOVEMENT
- if(cloudLayers[p.name]){
-  cloudLayers[p.name].rotation.y+=
-   delta*.12*multiplier;
- }
-
-});
-
-   // REVOLUTION AROUND THE SUN
+   // PLANET REVOLUTION AROUND THE SUN
    pivot.rotation.y+=delta*p.speed*.16*multiplier;
 
-   // ROTATION ON ITS OWN AXIS
+   // PLANET ROTATION ON ITS OWN AXIS
    mesh.rotation.y+=delta*
     (p.name==="Venus"?-.34:.55)*multiplier;
+
+   // INDEPENDENT CLOUD MOVEMENT
+   if(cloudLayers[p.name]){
+    cloudLayers[p.name].rotation.y+=
+     delta*.12*multiplier;
+   }
+
   });
 
   starField.rotation.y+=delta*.002;
@@ -658,6 +650,7 @@ Object.values(planets).forEach(({pivot,mesh,data:p})=>{
 }
 
 requestAnimationFrame(animate);
+
 
 // RESIZE
 window.addEventListener("resize",()=>{
