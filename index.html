@@ -299,7 +299,9 @@ function makeSunTexture(){
 
 const sun=new THREE.Mesh(
  new THREE.SphereGeometry(5.5,64,64),
- new THREE.MeshBasicMaterial({color:0xffc15b})
+ new THREE.MeshBasicMaterial({
+  map:makeSunTexture()
+ })
 );
 scene.add(sun);
 
@@ -310,7 +312,7 @@ const sunCorona=new THREE.Sprite(
   depthWrite:false
  })
 );
-sunCorona.scale.set(48,48,1);
+sunCorona.scale.set(68,68,1);
 scene.add(sunCorona);
 
 // PROCEDURAL PLANET TEXTURES
