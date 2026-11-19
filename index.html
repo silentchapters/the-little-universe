@@ -1,1 +1,106 @@
-
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080916">
+<title>The Little Universe</title>
+<style>
+:root{--ink:#f4efff;--muted:#b9b3d2;--gold:#f6d99a;--violet:#b99cff;--panel:rgba(17,18,42,.78)}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#070814;color:var(--ink);font-family:Georgia,"Times New Roman",serif}
+body{background:radial-gradient(ellipse at 50% 45%,#191739 0%,#0c0d21 42%,#050610 100%)}
+#space{position:fixed;inset:0;width:100%;height:100%;touch-action:none;cursor:grab}
+#space.dragging{cursor:grabbing}
+.vignette{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 35%,rgba(2,3,12,.55) 100%)}
+.top{position:fixed;top:26px;left:0;right:0;text-align:center;pointer-events:none;padding:0 16px}
+.eyebrow{font:10px/1.5 Arial,sans-serif;letter-spacing:.42em;text-transform:uppercase;color:#b8a8e9}
+h1{font-size:clamp(30px,5vw,54px);font-weight:400;letter-spacing:.08em;margin:8px 0 5px;text-shadow:0 0 25px #a88bff66}
+.sub{font:12px Arial,sans-serif;letter-spacing:.14em;color:#b9b4d0}
+.hint{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);font:11px Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#aaa5c4;white-space:nowrap;pointer-events:none}
+.hint span{color:var(--gold)}
+.controls{position:fixed;right:20px;bottom:20px;display:flex;gap:8px}
+button{border:1px solid #b9a6e455;background:rgba(13,14,35,.65);color:#eee8ff;border-radius:30px;padding:10px 14px;font:11px Arial,sans-serif;letter-spacing:.08em;cursor:pointer;backdrop-filter:blur(10px)}
+button:hover{background:rgba(94,72,145,.4);border-color:#d6c5ff99}
+#intro{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 45%,rgba(32,25,68,.92),rgba(4,5,16,.96));z-index:5;transition:opacity 1s ease,visibility 1s}
+.intro-card{text-align:center;max-width:520px;padding:36px 26px}
+.intro-orb{width:100px;height:100px;border-radius:50%;margin:0 auto 28px;background:radial-gradient(circle at 35% 30%,#fff7d7 0 2%,#d6b8ff 8%,#8063c6 28%,#29214e 60%,#080916 75%);box-shadow:0 0 35px #b89cff77,0 0 100px #7760ce44;position:relative}
+.intro-orb:after{content:"";position:absolute;inset:30px -20px;border:1px solid #e9d5ff99;border-radius:50%;transform:rotate(-25deg)}
+.intro-card h2{font-weight:400;font-size:clamp(28px,5vw,43px);letter-spacing:.06em;margin:0 0 12px}
+.intro-card p{font:14px/1.8 Arial,sans-serif;color:#c4bfd9;margin:0 auto 25px;max-width:390px}
+#enter{padding:13px 25px;border-color:#e6d4a877;color:#f8e9c6;letter-spacing:.18em}
+#panel{position:fixed;inset:auto 0 0;z-index:4;display:flex;justify-content:center;padding:20px;pointer-events:none;opacity:0;transform:translateY(18px);transition:.35s}
+#panel.show{opacity:1;transform:translateY(0)}
+.panel-card{pointer-events:auto;width:min(540px,100%);border:1px solid #c8b4f044;border-radius:20px;padding:24px 26px 22px;background:linear-gradient(145deg,rgba(28,25,59,.94),rgba(9,11,29,.94));box-shadow:0 20px 80px #0009;backdrop-filter:blur(18px);position:relative}
+.panel-kicker{font:10px Arial,sans-serif;letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
+.panel-card h2{font-size:29px;font-weight:400;margin:9px 0}
+.panel-card p{font:13px/1.75 Arial,sans-serif;color:#d0cbe0;margin:0}
+.close{position:absolute;right:16px;top:14px;border:0;background:transparent;font-size:20px;padding:4px 8px;color:#c9c0df}
+.panel-foot{margin-top:18px;font:10px Arial,sans-serif;letter-spacing:.14em;color:#938bad}
+#sound{position:fixed;top:20px;right:20px;z-index:2}
+@media(max-width:600px){.top{top:20px}.sub{font-size:10px}.hint{bottom:78px;font-size:9px}.controls{right:50%;transform:translateX(50%);bottom:20px}.panel-card{padding:22px}.panel-card h2{font-size:25px}}
+</style>
+</head>
+<body>
+<canvas id="space" aria-label="Interactive star field. Drag to explore and tap a glowing world."></canvas>
+<div class="vignette"></div>
+<div class="top"><div class="eyebrow">an experience beyond the ordinary</div><h1>The Little Universe</h1><div class="sub">A thousand quiet wonders, waiting to be found</div></div>
+<button id="sound" aria-label="Toggle ambient sound">SOUND OFF</button>
+<div class="hint">drag to wander <span>·</span> tap a world to discover</div>
+<div class="controls"><button id="home">RETURN TO ORBIT</button><button id="zoomOut">−</button><button id="zoomIn">+</button></div>
+<div id="panel"><div class="panel-card"><button class="close" id="close" aria-label="Close">×</button><div class="panel-kicker" id="kicker">A hidden place</div><h2 id="panelTitle">A quiet wonder</h2><p id="panelText"></p><div class="panel-foot">TAKE YOUR TIME · THERE IS NO WRONG WAY TO EXPLORE</div></div></div>
+<div id="intro"><div class="intro-card"><div class="intro-orb"></div><div class="eyebrow">somewhere between stardust and dreams</div><h2>Every universe begins<br>with a little wonder.</h2><p>Beyond the familiar sky, a small universe is waiting. Wander gently. Follow what glows. See what you find.</p><button id="enter">ENTER THE UNIVERSE</button></div></div>
+<script>
+(()=>{
+const canvas=document.getElementById('space'),ctx=canvas.getContext('2d');
+let w,h,dpr,stars=[],planets=[],scale=1,offset={x:0,y:0},drag=null,selected=null,anim=0;
+const worlds=[
+ {name:'The Star of Memories',kind:'A constellation of little moments',text:'Some memories shine quietly. Others become entire galaxies. This place is for the moments worth keeping close. In a future chapter, each star can hold a photograph, a voice, or a story of its own.',color:'#f4d69a',x:-260,y:-55,r:33},
+ {name:'The Planet of Stories',kind:'A world made of chapters',text:'Every world has a story beneath its surface. Here, different places can become chapters to explore — each with its own atmosphere, colours, and little discoveries.',color:'#bd9cff',x:180,y:-155,r:49},
+ {name:'The Constellation of Promises',kind:'Words written in starlight',text:'A promise is a small light that keeps its place in the dark. One day, the stars here may connect to reveal words, wishes, and things we choose to carry forward.',color:'#a7d8ee',x:320,y:145,r:28},
+ {name:'The Hidden Galaxy',kind:'A secret beyond the veil',text:'Not everything reveals itself at first glance. This distant glow is a reminder to stay curious. Hidden rooms, quiet surprises, and unexpected paths can live here.',color:'#e8a9d5',x:-170,y:205,r:40},
+ {name:'The Final Destination',kind:'A place at the edge of the map',text:'Every journey deserves a moment to pause and look back at how far it has carried us. This destination is still unwritten — waiting for the meaning we decide to give it.',color:'#f2e7c1',x:20,y:315,r:24}
+];
+function resize(){dpr=Math.min(devicePixelRatio||1,2);w=innerWidth;h=innerHeight;canvas.width=w*dpr;canvas.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);stars=Array.from({length:Math.floor(w*h/1900)},()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.35+.2,a:Math.random()*.7+.15,p:Math.random()*6.28,s:.3+Math.random()*1.3}));}
+function worldToScreen(x,y){return{x:w/2+(x+offset.x)*scale,y:h/2+(y+offset.y)*scale}}
+function drawPlanet(p,t){
+ const q=worldToScreen(p.x,p.y),r=p.r*scale;
+ if(q.x<-r-100||q.x>w+r+100||q.y<-r-100||q.y>h+r+100)return;
+ ctx.save();ctx.translate(q.x,q.y);
+ const glow=ctx.createRadialGradient(0,0,r*.3,0,0,r*2.8);glow.addColorStop(0,p.color+'55');glow.addColorStop(1,p.color+'00');ctx.fillStyle=glow;ctx.beginPath();ctx.arc(0,0,r*2.8,0,Math.PI*2);ctx.fill();
+ ctx.save();ctx.rotate(-.28);ctx.strokeStyle=p.color+'aa';ctx.lineWidth=Math.max(1,2*scale);ctx.beginPath();ctx.ellipse(0,0,r*1.55,r*.43,0,Math.PI,Math.PI*2);ctx.stroke();ctx.restore();
+ const g=ctx.createRadialGradient(-r*.35,-r*.4,2,0,0,r);g.addColorStop(0,'#fff');g.addColorStop(.12,p.color);g.addColorStop(.62,p.color+'cc');g.addColorStop(1,'#17142e');
+ ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);ctx.fill();
+ ctx.strokeStyle=p.color+'99';ctx.lineWidth=1;ctx.beginPath();ctx.arc(0,0,r+5+Math.sin(t*.001+p.x)*2,0,Math.PI*2);ctx.stroke();
+ ctx.save();ctx.rotate(-.28);ctx.strokeStyle=p.color;ctx.globalAlpha=.8;ctx.lineWidth=Math.max(1,3*scale);ctx.beginPath();ctx.ellipse(0,0,r*1.55,r*.43,.0,0,Math.PI);ctx.stroke();ctx.restore();
+ ctx.fillStyle='#f8f2ff';ctx.textAlign='center';ctx.font=`${Math.max(10,12*scale)}px Arial`;ctx.fillText(p.name,0,r+25*scale);
+ ctx.restore();
+}
+function render(t){anim=t;ctx.clearRect(0,0,w,h);
+ const neb=ctx.createRadialGradient(w*.5,h*.48,10,w*.5,h*.48,Math.max(w,h)*.72);neb.addColorStop(0,'rgba(77,54,125,.18)');neb.addColorStop(.55,'rgba(35,32,77,.10)');neb.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=neb;ctx.fillRect(0,0,w,h);
+ for(const s of stars){const tw=.45+.55*Math.sin(t*.001*s.s+s.p);ctx.globalAlpha=s.a*tw;ctx.fillStyle='#eee9ff';ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();if(s.r>1.1){ctx.strokeStyle='#d8caff66';ctx.beginPath();ctx.moveTo(s.x-3,s.y);ctx.lineTo(s.x+3,s.y);ctx.moveTo(s.x,s.y-3);ctx.lineTo(s.x,s.y+3);ctx.stroke();}}
+ ctx.globalAlpha=1;
+ // distant dust paths
+ ctx.save();ctx.translate(w/2+offset.x*scale,h/2+offset.y*scale);ctx.scale(scale,scale);
+ ctx.strokeStyle='rgba(190,165,255,.10)';ctx.setLineDash([2,12]);ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(0,0,410,285,-.25,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);ctx.restore();
+ planets.forEach(p=>drawPlanet(p,t));
+ requestAnimationFrame(render);
+}
+function hit(x,y){for(let i=planets.length-1;i>=0;i--){const p=planets[i],q=worldToScreen(p.x,p.y);if(Math.hypot(x-q.x,y-q.y)<p.r*scale+17)return p;}return null}
+function openWorld(p){selected=p;document.getElementById('kicker').textContent=p.kind;document.getElementById('panelTitle').textContent=p.name;document.getElementById('panelText').textContent=p.text;document.getElementById('panel').classList.add('show')}
+function closeWorld(){selected=null;document.getElementById('panel').classList.remove('show')}
+canvas.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,ox:offset.x,oy:offset.y,moved:false};canvas.classList.add('dragging');canvas.setPointerCapture(e.pointerId)});
+canvas.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>5)drag.moved=true;offset.x=drag.ox+dx/scale;offset.y=drag.oy+dy/scale});
+canvas.addEventListener('pointerup',e=>{if(!drag)return;const moved=drag.moved;drag=null;canvas.classList.remove('dragging');if(!moved){const p=hit(e.clientX,e.clientY);if(p)openWorld(p);else closeWorld()}});
+canvas.addEventListener('wheel',e=>{e.preventDefault();scale=Math.max(.55,Math.min(1.8,scale*(e.deltaY<0?1.08:.92)))},{passive:false});
+document.getElementById('enter').onclick=()=>{const el=document.getElementById('intro');el.style.opacity=0;el.style.visibility='hidden'};
+document.getElementById('close').onclick=closeWorld;
+document.getElementById('zoomIn').onclick=()=>scale=Math.min(1.8,scale*1.18);
+document.getElementById('zoomOut').onclick=()=>scale=Math.max(.55,scale/1.18);
+document.getElementById('home').onclick=()=>{offset={x:0,y:0};scale=1;closeWorld()};
+document.getElementById('sound').onclick=()=>{const b=document.getElementById('sound');b.textContent=b.textContent==='SOUND OFF'?'SOUND ON':'SOUND OFF';b.title='Ambient sound can be added in a later version';};
+planets=worlds;resize();addEventListener('resize',resize);requestAnimationFrame(render);
+})();
+</script>
+</body>
+</html>
