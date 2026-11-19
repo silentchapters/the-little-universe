@@ -476,6 +476,29 @@ data.forEach((p,index)=>{
  mesh.userData.name=p.name;
  pivot.add(mesh);
 
+// EARTH'S MOVING CLOUD LAYER
+if(p.name==="Earth"){
+
+ const cloudMaterial=new THREE.MeshBasicMaterial({
+  map:makeCloudTexture(),
+  transparent:true,
+  opacity:.65,
+  depthWrite:false
+ });
+
+ const cloudMesh=new THREE.Mesh(
+  new THREE.SphereGeometry(
+   p.radius*1.018,
+   64,48
+  ),
+  cloudMaterial
+ );
+
+ mesh.add(cloudMesh);
+
+ cloudLayers.Earth=cloudMesh;
+}
+
  // ATMOSPHERIC HALO
  if(["Earth","Venus","Uranus","Neptune"].includes(p.name)){
   const halo=new THREE.Mesh(
@@ -601,7 +624,24 @@ function animate(now){
   sun.rotation.y+=delta*.1;
   sunCorona.material.rotation+=delta*.015;
 
-  Object.values(planets).forEach(({pivot,mesh,data:p})=>{
+  
+Object.values(planets).forEach(({pivot,mesh,data:p})=>{
+
+ // PLANET REVOLUTION AROUND THE SUN
+ pivot.rotation.y+=delta*p.speed*.16*multiplier;
+
+ // PLANET ROTATION ON ITS OWN AXIS
+ mesh.rotation.y+=delta*
+  (p.name==="Venus"?-.34:.55)*multiplier;
+
+ // INDEPENDENT CLOUD MOVEMENT
+ if(cloudLayers[p.name]){
+  cloudLayers[p.name].rotation.y+=
+   delta*.12*multiplier;
+ }
+
+});
+
    // REVOLUTION AROUND THE SUN
    pivot.rotation.y+=delta*p.speed*.16*multiplier;
 
