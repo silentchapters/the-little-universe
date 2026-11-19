@@ -537,6 +537,80 @@ if(p.name==="Earth"){
  buttons.appendChild(button);
 });
 
+// 🌙 THE MOON — EARTH'S COMPANION
+const moonOrbit=new THREE.Group();
+
+// Place the Moon's orbital centre at Earth's position
+moonOrbit.position.x=planets.Earth.data.orbit;
+planets.Earth.pivot.add(moonOrbit);
+
+// Visible orbital path around Earth
+const moonOrbitPoints=[];
+for(let i=0;i<=120;i++){
+ const angle=i/120*Math.PI*2;
+ moonOrbitPoints.push(new THREE.Vector3(
+  Math.cos(angle)*3.5,
+  0,
+  Math.sin(angle)*3.5
+ ));
+}
+
+const moonOrbitLine=new THREE.LineLoop(
+ new THREE.BufferGeometry().setFromPoints(moonOrbitPoints),
+ new THREE.LineBasicMaterial({
+  color:0xc4cde2,
+  transparent:true,
+  opacity:.28
+ })
+);
+moonOrbit.add(moonOrbitLine);
+
+// Moon surface
+const moonMesh=new THREE.Mesh(
+ new THREE.SphereGeometry(.38,48,32),
+ new THREE.MeshStandardMaterial({
+  map:makeTexture(
+   "#aaa9a5",
+   "#55545a",
+   "#dedbd2",
+   "rock"
+  ),
+  roughness:1
+ })
+);
+
+moonMesh.position.x=3.5;
+moonMesh.userData.name="Moon";
+moonOrbit.add(moonMesh);
+
+// Moon information
+const moonData={
+ name:"Moon",
+ radius:.38,
+ orbit:3.5,
+ speed:2.5,
+ day:"27.3 Earth days",
+ year:"27.3 Earth days",
+ type:"Natural satellite",
+ moons:"0",
+ desc:"Earth's natural companion. A cratered, rocky world that travels around our planet while keeping nearly the same face turned toward us."
+};
+
+planets.Moon={
+ pivot:moonOrbit,
+ mesh:moonMesh,
+ data:moonData
+};
+
+clickable.push(moonMesh);
+
+// Add Moon to the selection panel
+const moonButton=document.createElement("button");
+moonButton.textContent="●  Moon";
+moonButton.dataset.name="Moon";
+moonButton.onclick=()=>selectPlanet("Moon");
+buttons.appendChild(moonButton);
+
 // SELECT A PLANET
 function selectPlanet(name,focus=true){
  const item=planets[name];
@@ -630,9 +704,13 @@ function animate(now){
    // PLANET REVOLUTION AROUND THE SUN
    pivot.rotation.y+=delta*p.speed*.16*multiplier;
 
-   // PLANET ROTATION ON ITS OWN AXIS
-   mesh.rotation.y+=delta*
-    (p.name==="Venus"?-.34:.55)*multiplier;
+  // PLANET ROTATION ON ITS OWN AXIS
+if(p.name==="Moon"){
+ mesh.rotation.y+=delta*p.speed*.16*multiplier;
+}else{
+ mesh.rotation.y+=delta*
+  (p.name==="Venus"?-.34:.55)*multiplier;
+}
 
    // INDEPENDENT CLOUD MOVEMENT
    if(cloudLayers[p.name]){
