@@ -1,129 +1,55 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Little Universe | 3D Solar System</title>
-
 <style>
 *{box-sizing:border-box}
-body{
-  margin:0;overflow:hidden;
-  background:#030611;color:#f3f5ff;
-  font-family:Arial,Helvetica,sans-serif
-}
+body{margin:0;overflow:hidden;background:#030611;color:#f3f5ff;font-family:Arial,Helvetica,sans-serif}
 canvas{display:block}
 #space{position:fixed;inset:0}
-header{
-  position:fixed;top:22px;left:25px;
-  z-index:2;pointer-events:none
-}
-.eyebrow{
-  font-size:10px;letter-spacing:4px;
-  color:#9ebcff;text-transform:uppercase
-}
-h1{
-  font-size:32px;margin:8px 0;
-  letter-spacing:-1px;font-weight:600
-}
+header{position:fixed;top:22px;left:25px;z-index:2;pointer-events:none}
+.eyebrow{font-size:10px;letter-spacing:4px;color:#9ebcff;text-transform:uppercase}
+h1{font-size:32px;margin:8px 0;letter-spacing:-1px;font-weight:600}
 .subtitle{font-size:12px;color:#aab5d2}
-.panel{
-  position:fixed;right:25px;top:50%;
-  transform:translateY(-50%);
-  width:250px;padding:19px;
-  background:rgba(9,16,36,.78);
-  border:1px solid #283657;border-radius:17px;
-  backdrop-filter:blur(15px);
-  z-index:2
-}
-.panel small{
-  color:#91b5ff;letter-spacing:2px;
-  text-transform:uppercase
-}
+.panel{position:fixed;right:25px;top:50%;transform:translateY(-50%);width:250px;padding:19px;background:rgba(9,16,36,.78);border:1px solid #283657;border-radius:17px;backdrop-filter:blur(15px);z-index:2}
+.panel small{color:#91b5ff;letter-spacing:2px;text-transform:uppercase}
 .panel h2{font-size:25px;margin:9px 0}
-.panel p{
-  font-size:12px;line-height:1.6;
-  color:#bdc8df
-}
-.facts{
-  display:grid;grid-template-columns:1fr 1fr;
-  gap:9px;margin-top:15px
-}
-.fact{
-  background:#ffffff0c;padding:10px;
-  border-radius:9px
-}
-.fact span{
-  display:block;font-size:9px;
-  color:#8799bd;text-transform:uppercase
-}
+.panel p{font-size:12px;line-height:1.6;color:#bdc8df}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:15px}
+.fact{background:#ffffff0c;padding:10px;border-radius:9px}
+.fact span{display:block;font-size:9px;color:#8799bd;text-transform:uppercase}
 .fact strong{font-size:11px;display:block;margin-top:6px}
-.planets{
-  position:fixed;left:22px;bottom:85px;
-  padding:10px;background:#091020bd;
-  border:1px solid #293754;border-radius:13px;
-  display:flex;flex-direction:column;gap:4px;
-  z-index:2
-}
-.planets button{
-  background:transparent;border:0;color:#bdc9e5;
-  padding:6px 10px;text-align:left;
-  border-radius:7px;cursor:pointer;font-size:11px
-}
-.planets button:hover,.planets button.active{
-  background:#668eea30;color:white
-}
-.controls{
-  position:fixed;bottom:20px;left:50%;
-  transform:translateX(-50%);
-  display:flex;align-items:center;gap:9px;
-  background:#091020d9;border:1px solid #293754;
-  padding:10px;border-radius:13px;z-index:3;
-  backdrop-filter:blur(12px)
-}
-.controls button{
-  background:#ffffff12;color:white;
-  border:1px solid #52658b66;
-  border-radius:8px;padding:9px 12px;
-  cursor:pointer;font-size:11px
-}
+.planets{position:fixed;left:22px;bottom:85px;padding:10px;background:#091020bd;border:1px solid #293754;border-radius:13px;display:flex;flex-direction:column;gap:4px;z-index:2}
+.planets button{background:transparent;border:0;color:#bdc9e5;padding:6px 10px;text-align:left;border-radius:7px;cursor:pointer;font-size:11px}
+.planets button:hover,.planets button.active{background:#668eea30;color:white}
+.controls{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:9px;background:#091020d9;border:1px solid #293754;padding:10px;border-radius:13px;z-index:3;backdrop-filter:blur(12px)}
+.controls button{background:#ffffff12;color:white;border:1px solid #52658b66;border-radius:8px;padding:9px 12px;cursor:pointer;font-size:11px}
 .controls button:hover{background:#547bdc55}
-.speed{
-  font-size:10px;color:#b9c8e9;
-  display:flex;align-items:center;gap:6px
-}
+.speed{font-size:10px;color:#b9c8e9;display:flex;align-items:center;gap:6px}
 input{width:75px;accent-color:#9bbcff}
-#loading{
-  position:fixed;inset:0;z-index:10;
-  display:grid;place-items:center;
-  background:#030611;color:#a9c4ff;
-  letter-spacing:3px;font-size:12px;
-  transition:opacity 1s
-}
+#loading{position:fixed;inset:0;z-index:10;display:grid;place-items:center;background:#030611;color:#a9c4ff;letter-spacing:3px;font-size:12px;transition:opacity 1s}
 #loading.done{opacity:0;pointer-events:none}
 
 @media(max-width:650px){
-  header{top:14px;left:15px}
-  h1{font-size:25px}
-  .subtitle{font-size:10px}
-  .panel{
-    right:12px;bottom:83px;top:auto;
-    transform:none;width:190px;padding:12px
-  }
-  .panel h2{font-size:19px}
-  .panel p{font-size:10px}
-  .fact{padding:7px}
-  .fact strong{font-size:10px}
-  .planets{left:10px;bottom:85px;padding:6px}
-  .planets button{font-size:10px;padding:5px}
-  .controls{bottom:10px;gap:5px;padding:7px}
-  .controls button{padding:8px;font-size:10px}
-  input{width:48px}
+header{top:14px;left:15px}
+h1{font-size:25px}
+.subtitle{font-size:10px}
+.panel{right:12px;bottom:83px;top:auto;transform:none;width:190px;padding:12px}
+.panel h2{font-size:19px}
+.panel p{font-size:10px}
+.fact{padding:7px}
+.fact strong{font-size:10px}
+.planets{left:10px;bottom:85px;padding:6px}
+.planets button{font-size:10px;padding:5px}
+.controls{bottom:10px;gap:5px;padding:7px}
+.controls button{padding:8px;font-size:10px}
+input{width:48px}
 }
 @media(max-width:390px){
-  .planets{display:none}
-  .panel{width:180px}
+.planets{display:none}
+.panel{width:180px}
 }
 </style>
 
@@ -138,7 +64,6 @@ input{width:75px;accent-color:#9bbcff}
 </head>
 
 <body>
-
 <div id="space"></div>
 <div id="loading">PREPARING YOUR UNIVERSE...</div>
 
@@ -217,26 +142,29 @@ for(let i=0;i<4000;i++){
   r*Math.sin(phi)*Math.sin(theta)
  );
 }
+
 const starGeometry=new THREE.BufferGeometry();
 starGeometry.setAttribute(
  "position",
  new THREE.Float32BufferAttribute(starPositions,3)
 );
+
 const starField=new THREE.Points(
  starGeometry,
  new THREE.PointsMaterial({
-  color:0xd6e2ff,size:1.1,
-  sizeAttenuation:true,transparent:true,opacity:.9
+  color:0xd6e2ff,
+  size:1.1,
+  sizeAttenuation:true,
+  transparent:true,
+  opacity:.9
  })
 );
 scene.add(starField);
-
 
 // SUN GLOW TEXTURE
 function glowTexture(){
  const c=document.createElement("canvas");
  c.width=c.height=512;
-
  const ctx=c.getContext("2d");
  const g=ctx.createRadialGradient(256,256,5,256,256,256);
 
@@ -248,7 +176,6 @@ function glowTexture(){
 
  ctx.fillStyle=g;
  ctx.fillRect(0,0,512,512);
-
  return new THREE.CanvasTexture(c);
 }
 
@@ -257,7 +184,6 @@ function makeSunTexture(){
  const c=document.createElement("canvas");
  c.width=1024;
  c.height=512;
-
  const ctx=c.getContext("2d");
 
  const gradient=ctx.createLinearGradient(0,0,0,512);
@@ -270,7 +196,6 @@ function makeSunTexture(){
  ctx.fillStyle=gradient;
  ctx.fillRect(0,0,1024,512);
 
- // Flowing orange and golden surface patterns
  for(let i=0;i<900;i++){
   const x=Math.random()*1024;
   const y=Math.random()*512;
@@ -296,18 +221,16 @@ function makeSunTexture(){
  return texture;
 }
 
-
 const sun=new THREE.Mesh(
  new THREE.SphereGeometry(5.5,64,64),
- new THREE.MeshBasicMaterial({
-  map:makeSunTexture()
- })
+ new THREE.MeshBasicMaterial({map:makeSunTexture()})
 );
 scene.add(sun);
 
 const sunCorona=new THREE.Sprite(
  new THREE.SpriteMaterial({
-  map:glowTexture(),transparent:true,
+  map:glowTexture(),
+  transparent:true,
   blending:THREE.AdditiveBlending,
   depthWrite:false
  })
@@ -318,13 +241,15 @@ scene.add(sunCorona);
 // PROCEDURAL PLANET TEXTURES
 function makeTexture(base,dark,light,style){
  const c=document.createElement("canvas");
- c.width=1024;c.height=512;
+ c.width=1024;
+ c.height=512;
  const ctx=c.getContext("2d");
 
  const gradient=ctx.createLinearGradient(0,0,0,512);
  gradient.addColorStop(0,light);
  gradient.addColorStop(.5,base);
  gradient.addColorStop(1,dark);
+
  ctx.fillStyle=gradient;
  ctx.fillRect(0,0,1024,512);
 
@@ -358,69 +283,136 @@ function makeTexture(base,dark,light,style){
    );
    ctx.fill();
   }
+
   ctx.globalAlpha=.22;
   ctx.fillStyle="#ffffff";
   for(let i=0;i<100;i++){
    ctx.beginPath();
-   ctx.ellipse(Math.random()*1024,Math.random()*512,
-    20+Math.random()*40,2+Math.random()*7,0,0,Math.PI*2);
+   ctx.ellipse(
+    Math.random()*1024,Math.random()*512,
+    20+Math.random()*40,2+Math.random()*7,
+    0,0,Math.PI*2
+   );
    ctx.fill();
   }
  }
- ctx.globalAlpha=1;
 
+ ctx.globalAlpha=1;
  const texture=new THREE.CanvasTexture(c);
  texture.colorSpace=THREE.SRGBColorSpace;
  return texture;
 }
 
-// EARTH'S PROCEDURAL CLOUD TEXTURE
+// EARTH'S UPGRADED CLOUD TEXTURE
 function makeCloudTexture(){
+ const width=1024;
+ const height=512;
  const canvas=document.createElement("canvas");
- canvas.width=1024;
- canvas.height=512;
+ canvas.width=width;
+ canvas.height=height;
 
  const ctx=canvas.getContext("2d");
+ const image=ctx.createImageData(width,height);
+ const pixels=image.data;
 
- // Transparent background
- ctx.clearRect(0,0,1024,512);
-
- // Create many soft, irregular cloud formations
- for(let i=0;i<450;i++){
-  const x=Math.random()*1024;
-  const y=Math.random()*512;
-
-  const width=8+Math.random()*65;
-  const height=3+Math.random()*15;
-
-  ctx.globalAlpha=.12+Math.random()*.25;
-  ctx.fillStyle="#ffffff";
-
-  ctx.beginPath();
-  ctx.ellipse(
-   x,y,width,height,
-   Math.random()*Math.PI,
-   0,Math.PI*2
-  );
-  ctx.fill();
-
-  // Additional smaller cloud details
-  ctx.beginPath();
-  ctx.ellipse(
-   x+width*.45,
-   y+height*.3,
-   width*.45,
-   height*.8,
-   Math.random(),
-   0,Math.PI*2
-  );
-  ctx.fill();
+ // Fixed seed keeps the cloud map consistent.
+ let seed=24681357;
+ function random(){
+  seed=(seed*1664525+1013904223)>>>0;
+  return seed/4294967296;
  }
 
- ctx.globalAlpha=1;
+ // Five scales of cloud formations.
+ const octaves=[
+  {width:8,height:4,weight:.42},
+  {width:16,height:8,weight:.27},
+  {width:32,height:16,weight:.17},
+  {width:64,height:32,weight:.10},
+  {width:128,height:64,weight:.04}
+ ].map(o=>({
+  ...o,
+  values:Array.from(
+   {length:o.width*o.height},
+   ()=>random()
+  )
+ }));
+
+ function smooth(t){
+  return t*t*(3-2*t);
+ }
+
+ function sampleNoise(grid,u,v){
+  const gx=u*grid.width;
+  const gy=v*(grid.height-1);
+
+  const x0=Math.floor(gx);
+  const x1=(x0+1)%grid.width;
+
+  const y0=Math.max(
+   0,Math.min(grid.height-1,Math.floor(gy))
+  );
+  const y1=Math.min(grid.height-1,y0+1);
+
+  const tx=smooth(gx-x0);
+  const ty=smooth(gy-y0);
+
+  const a=grid.values[y0*grid.width+x0];
+  const b=grid.values[y0*grid.width+x1];
+  const c=grid.values[y1*grid.width+x0];
+  const d=grid.values[y1*grid.width+x1];
+
+  const top=a+(b-a)*tx;
+  const bottom=c+(d-c)*tx;
+
+  return top+(bottom-top)*ty;
+ }
+
+ function smoothstep(edge0,edge1,value){
+  const t=Math.max(
+   0,Math.min(1,(value-edge0)/(edge1-edge0))
+  );
+  return t*t*(3-2*t);
+ }
+
+ for(let y=0;y<height;y++){
+  const v=y/(height-1);
+
+  for(let x=0;x<width;x++){
+   const u=x/width;
+   let field=0;
+
+   for(const octave of octaves){
+    field+=sampleNoise(octave,u,v)*octave.weight;
+   }
+
+   const coverage=smoothstep(.535,.705,field);
+   const fine=sampleNoise(octaves[4],u,v);
+
+   const polarSoftening=
+    .78+.22*Math.sin(Math.PI*v);
+
+   const alpha=
+    coverage*(.34+fine*.34)*polarSoftening;
+
+   const i=(y*width+x)*4;
+
+   pixels[i]=255;
+   pixels[i+1]=255;
+   pixels[i+2]=255;
+   pixels[i+3]=Math.round(alpha*255);
+  }
+ }
+
+ ctx.putImageData(image,0,0);
 
  const texture=new THREE.CanvasTexture(canvas);
  texture.colorSpace=THREE.SRGBColorSpace;
+ texture.wrapS=THREE.RepeatWrapping;
+ texture.wrapT=THREE.ClampToEdgeWrapping;
+ texture.generateMipmaps=true;
+ texture.minFilter=THREE.LinearMipmapLinearFilter;
+ texture.magFilter=THREE.LinearFilter;
+
  return texture;
 }
 
@@ -499,17 +491,20 @@ function createOrbit(radius){
    Math.cos(a)*radius,0,Math.sin(a)*radius
   ));
  }
+
  const geometry=new THREE.BufferGeometry().setFromPoints(points);
  const line=new THREE.LineLoop(
   geometry,
   new THREE.LineBasicMaterial({
-   color:0x7186b6,transparent:true,opacity:.24
+   color:0x7186b6,
+   transparent:true,
+   opacity:.24
   })
  );
  scene.add(line);
 }
 
-data.forEach((p,index)=>{
+data.forEach(p=>{
  createOrbit(p.orbit);
 
  const pivot=new THREE.Group();
@@ -525,32 +520,26 @@ data.forEach((p,index)=>{
   new THREE.SphereGeometry(p.radius,64,48),
   material
  );
+
  mesh.position.x=p.orbit;
  mesh.userData.name=p.name;
  pivot.add(mesh);
 
-// EARTH'S MOVING CLOUD LAYER
-if(p.name==="Earth"){
+ // ATTACH EARTH'S CLOUD LAYER
+ if(p.name==="Earth"){
+  const cloudMesh=new THREE.Mesh(
+   new THREE.SphereGeometry(p.radius*1.018,64,48),
+   new THREE.MeshBasicMaterial({
+    map:makeCloudTexture(),
+    transparent:true,
+    opacity:.78,
+    depthWrite:false
+   })
+  );
 
- const cloudMaterial=new THREE.MeshBasicMaterial({
-  map:makeCloudTexture(),
-  transparent:true,
-  opacity:.65,
-  depthWrite:false
- });
-
- const cloudMesh=new THREE.Mesh(
-  new THREE.SphereGeometry(
-   p.radius*1.018,
-   64,48
-  ),
-  cloudMaterial
- );
-
- mesh.add(cloudMesh);
-
- cloudLayers.Earth=cloudMesh;
-}
+  mesh.add(cloudMesh);
+  cloudLayers.Earth=cloudMesh;
+ }
 
  // ATMOSPHERIC HALO
  if(["Earth","Venus","Uranus","Neptune"].includes(p.name)){
@@ -558,7 +547,8 @@ if(p.name==="Earth"){
    new THREE.SphereGeometry(p.radius*1.06,48,32),
    new THREE.MeshBasicMaterial({
     color:p.name==="Earth"?0x59aaff:new THREE.Color(p.colors[0]),
-    transparent:true,opacity:.12,
+    transparent:true,
+    opacity:.12,
     side:THREE.BackSide
    })
   );
@@ -572,7 +562,8 @@ if(p.name==="Earth"){
    new THREE.MeshStandardMaterial({
     color:0xd1bb91,
     side:THREE.DoubleSide,
-    transparent:true,opacity:.8,
+    transparent:true,
+    opacity:.8,
     roughness:1
    })
   );
@@ -590,14 +581,12 @@ if(p.name==="Earth"){
  buttons.appendChild(button);
 });
 
-// 🌙 THE MOON — EARTH'S COMPANION
+// THE MOON — EARTH'S COMPANION
 const moonOrbit=new THREE.Group();
-
-// Place the Moon's orbital centre at Earth's position
 moonOrbit.position.x=planets.Earth.data.orbit;
 planets.Earth.pivot.add(moonOrbit);
 
-// Visible orbital path around Earth
+// MOON ORBIT PATH
 const moonOrbitPoints=[];
 for(let i=0;i<=120;i++){
  const angle=i/120*Math.PI*2;
@@ -618,7 +607,7 @@ const moonOrbitLine=new THREE.LineLoop(
 );
 moonOrbit.add(moonOrbitLine);
 
-// Moon surface
+// MOON SURFACE
 const moonMesh=new THREE.Mesh(
  new THREE.SphereGeometry(.38,48,32),
  new THREE.MeshStandardMaterial({
@@ -636,7 +625,7 @@ moonMesh.position.x=3.5;
 moonMesh.userData.name="Moon";
 moonOrbit.add(moonMesh);
 
-// Moon information
+// MOON INFORMATION
 const moonData={
  name:"Moon",
  radius:.38,
@@ -657,7 +646,7 @@ planets.Moon={
 
 clickable.push(moonMesh);
 
-// Add Moon to the selection panel
+// MOON SELECTION BUTTON
 const moonButton=document.createElement("button");
 moonButton.textContent="●  Moon";
 moonButton.dataset.name="Moon";
@@ -670,6 +659,7 @@ function selectPlanet(name,focus=true){
  if(!item)return;
 
  const p=item.data;
+
  document.getElementById("name").textContent=p.name;
  document.getElementById("description").textContent=p.desc;
  document.getElementById("day").textContent=p.day;
@@ -696,10 +686,13 @@ function selectPlanet(name,focus=true){
   function move(now){
    const t=Math.min(1,(now-startTime)/850);
    const eased=1-Math.pow(1-t,3);
+
    camera.position.lerpVectors(start,destination,eased);
    controls.target.lerpVectors(startTarget,world,eased);
+
    if(t<1)requestAnimationFrame(move);
   }
+
   requestAnimationFrame(move);
  }
 }
@@ -711,8 +704,10 @@ const pointer=new THREE.Vector2();
 renderer.domElement.addEventListener("pointerdown",event=>{
  pointer.x=event.clientX/innerWidth*2-1;
  pointer.y=-(event.clientY/innerHeight)*2+1;
+
  raycaster.setFromCamera(pointer,camera);
  const hits=raycaster.intersectObjects(clickable,false);
+
  if(hits.length)selectPlanet(hits[0].object.userData.name);
 });
 
@@ -731,11 +726,11 @@ document.getElementById("home").onclick=()=>{
 };
 
 const speedInput=document.getElementById("speed");
+
 speedInput.oninput=()=>{
  document.getElementById("speedText").textContent=
  Number(speedInput.value).toFixed(1).replace(".0","")+"×";
 };
-
 
 // ANIMATION
 let previous=performance.now();
@@ -757,20 +752,17 @@ function animate(now){
    // PLANET REVOLUTION AROUND THE SUN
    pivot.rotation.y+=delta*p.speed*.16*multiplier;
 
-  // PLANET ROTATION ON ITS OWN AXIS
-if(p.name==="Moon"){
- mesh.rotation.y+=delta*p.speed*.16*multiplier;
-}else{
- mesh.rotation.y+=delta*
-  (p.name==="Venus"?-.34:.55)*multiplier;
-}
+   // PLANET ROTATION ON ITS OWN AXIS
+   if(p.name==="Moon"){
+    mesh.rotation.y+=delta*p.speed*.16*multiplier;
+   }else{
+    mesh.rotation.y+=delta*(p.name==="Venus"?-.34:.55)*multiplier;
+   }
 
    // INDEPENDENT CLOUD MOVEMENT
    if(cloudLayers[p.name]){
-    cloudLayers[p.name].rotation.y+=
-     delta*.12*multiplier;
+    cloudLayers[p.name].rotation.y+=delta*.12*multiplier;
    }
-
   });
 
   starField.rotation.y+=delta*.002;
@@ -781,7 +773,6 @@ if(p.name==="Moon"){
 }
 
 requestAnimationFrame(animate);
-
 
 // RESIZE
 window.addEventListener("resize",()=>{
